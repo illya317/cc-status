@@ -33,7 +33,7 @@ function getClaudeConfigDir(homeDir = homedir()) {
 }
 
 function getPluginDir(homeDir = homedir()) {
-  return join(getClaudeConfigDir(homeDir), 'plugins', 'cc-status');
+  return join(getClaudeConfigDir(homeDir), 'plugins', 'marketplaces', 'cc-status');
 }
 
 function loadJson(path) {
