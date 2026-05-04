@@ -1,6 +1,6 @@
 {
   "name": "cc-status",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Claude Code status line with third-party model cost, cache hit, and platform balance",
   "type": "module",
   "main": "dist/index.js",
