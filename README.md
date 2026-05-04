@@ -72,7 +72,8 @@ Then add to `~/.claude/settings.local.json`:
 "statusLine": {
   "type": "command",
   "command": "node ~/.claude/plugins/marketplaces/cc-status/dist/index.js",
-  "padding": 0
+  "padding": 0,
+  "refreshInterval": 1
 }
 ```
 
