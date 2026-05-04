@@ -1,3 +1,7 @@
+🌐 [English](README.md) | [中文文档](README_ZH.md)
+
+---
+
 # cc-status
 
 Claude Code HUD plugin — single-line status bar showing model, cache hit rate, idle timer, platform balance, and session cost.
