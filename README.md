@@ -27,7 +27,7 @@ Restart Claude Code to see the status line.
 Or manually:
 
 ```bash
-git clone https://github.com/illya317/cc-status.git ~/.claude/plugins/cc-status
+git clone https://github.com/illya317/cc-status.git ~/.claude/plugins/marketplaces/cc-status
 ```
 
 Then add to `~/.claude/settings.json`:
@@ -35,14 +35,14 @@ Then add to `~/.claude/settings.json`:
 ```json
 "statusLine": {
   "type": "command",
-  "command": "node ~/.claude/plugins/cc-status/dist/index.js",
+  "command": "node ~/.claude/plugins/marketplaces/cc-status/dist/index.js",
   "padding": 0
 }
 ```
 
 ## Configuration
 
-Edit `~/.claude/plugins/cc-status/config.json`:
+Edit `~/.claude/plugins/marketplaces/cc-status/config.json`:
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -62,11 +62,11 @@ Edit `~/.claude/plugins/cc-status/config.json`:
 
 The plugin reads from these locations (first found wins):
 
-1. `~/.claude/plugins/cc-status/.env`
+1. `~/.claude/plugins/marketplaces/cc-status/.env`
 2. `~/.env`
 3. `$PWD/.env`
 
-Both formats are supported:
+Copy `.env.example` to `.env` and fill in your keys. Both formats are supported:
 
 ```bash
 # Plain
