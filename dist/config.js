@@ -19,6 +19,7 @@ const DEFAULT_CONFIG = {
   },
   display: {
     layout: 'compact',
+    padding_lines: 0,
     context_bar_width: 5,
     usage_bar_width: 5,
     idle_cutoff_seconds: 3600,

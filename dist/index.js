@@ -130,7 +130,9 @@ export async function main() {
     };
 
     const segments = buildSegments(ctx);
-    console.log(render(segments, dispCfg.layout));
+    let output = render(segments, dispCfg.layout);
+    if (dispCfg.padding_lines > 0) output += '\n'.repeat(dispCfg.padding_lines);
+    console.log(output);
   } catch (err) {
     console.error('[cc-status]', err.message);
   }
