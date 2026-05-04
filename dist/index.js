@@ -61,16 +61,18 @@ export async function main() {
 
     const modelId = stdinData.model?.id || '';
     let modelName = stdinData.model?.display_name || '?';
-    // Shorten third-party model names
-    const SHORT_NAMES = {
-      'deepseek-v4-pro': 'DS Pro',
-      'deepseek-v4-flash': 'DS Flash',
-      'kimi': 'Kimi',
-      'gpt-5.5': 'GPT-5.5',
-      'minimax': 'MiniMax',
-    };
-    for (const [key, val] of Object.entries(SHORT_NAMES)) {
-      if (modelId.toLowerCase().includes(key)) { modelName = val; break; }
+    // Shorten third-party model names (fuzzy match, all lowercase)
+    const ml = modelId.toLowerCase();
+    if (ml.includes('deepseek')) {
+      if (ml.includes('pro')) modelName = 'ds pro';
+      else if (ml.includes('flash')) modelName = 'ds flash';
+      else modelName = 'ds';
+    } else if (ml.includes('kimi')) {
+      modelName = 'kimi';
+    } else if (ml.includes('minimax')) {
+      modelName = 'mmx';
+    } else if (ml.includes('gpt')) {
+      modelName = 'gpt';
     }
     const cwd = stdinData.workspace?.current_dir || stdinData.cwd || '';
     const dirname = basename(cwd) || cwd;
