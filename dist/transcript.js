@@ -19,6 +19,8 @@ export async function parseTranscript(transcriptPath) {
     const stream = createReadStream(transcriptPath, { encoding: 'utf8' });
     const rl = createInterface({ input: stream, crlfDelay: Infinity });
 
+    let lastModel = '';
+
     for await (const line of rl) {
       const trimmed = line.trim();
       if (!trimmed) continue;
@@ -27,6 +29,7 @@ export async function parseTranscript(transcriptPath) {
 
         // Primary: assistant message usage
         if (data.type === 'assistant') {
+          lastModel = (data.message && data.message.model) || lastModel;
           const msg = data.message || {};
           const u = msg.usage;
           if (!u) continue;
@@ -55,7 +58,7 @@ export async function parseTranscript(transcriptPath) {
         if (tur && typeof tur === 'object' && tur.usage) {
           const tu = tur.usage;
           const call = {
-            model: data.model || '',
+            model: lastModel,
             input_tokens: tu.input_tokens || 0,
             cache_read_input_tokens: tu.cache_read_input_tokens || 0,
             cache_creation_input_tokens: tu.cache_creation_input_tokens || 0,
