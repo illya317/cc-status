@@ -1,36 +1,36 @@
 ---
 description: Configure cc-status as the Claude Code status line
-allowed-tools: Read, Bash
+allowed-tools: Bash
 ---
 
 # Setup cc-status
 
-Read `~/.claude/settings.json` and `~/.claude/settings.local.json` (if exists).
+Run these commands in order. Do not read or edit files manually.
 
-## Step 1: Register statusLine
+## Step 1: Write statusLine
 
-If `statusLine` is not already set to cc-status in `settings.local.json`, write it:
-
-```json
-"statusLine": {
-  "type": "command",
-  "command": "node ~/.claude/plugins/marketplaces/cc-status/dist/index.js",
-  "padding": 0
+```bash
+python3 -c "
+import json
+from pathlib import Path
+p = Path.home() / '.claude' / 'settings.local.json'
+d = json.loads(p.read_text()) if p.exists() else {}
+d['statusLine'] = {
+    'type': 'command',
+    'command': 'node ~/.claude/plugins/marketplaces/cc-status/dist/index.js',
+    'padding': 0
 }
+p.write_text(json.dumps(d, indent=2, ensure_ascii=False))
+print('statusLine configured')
+"
 ```
-
-Prefer `settings.local.json` so it overrides global settings. Merge it with existing content (don't overwrite other keys).
 
 ## Step 2: Verify
 
-Run `echo '{"model":{"id":"deepseek-v4-pro","display_name":"Test"}}' | node ~/.claude/plugins/marketplaces/cc-status/dist/index.js` to verify the plugin works.
+```bash
+echo '{"model":{"id":"deepseek-v4-pro","display_name":"Test"},"workspace":{"current_dir":"/tmp"},"context_window":{"used_percentage":0}}' | node ~/.claude/plugins/marketplaces/cc-status/dist/index.js
+```
 
 ## Step 3: Done
 
-Tell the user:
-- **Status line is active.** Restart Claude Code or send a message to see it.
-- **Balance display** requires API keys in `~/.env`:
-  - `DEEPSEEK_API_KEY` — DeepSeek balance
-  - `KIMI_COOKIE` — Kimi quota (browser cookie from kimi.com)
-  - `MINIMAX_API_KEY` — MiniMax quota
-- **Config**: edit `~/.claude/plugins/marketplaces/cc-status/config.json` to toggle segments or adjust thresholds
+Report: Status line is active. Restart Claude Code. For balance display, add API keys to `~/.env` — see `~/.claude/plugins/marketplaces/cc-status/.env.example`.
