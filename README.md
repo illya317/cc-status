@@ -69,20 +69,31 @@ Edit `~/.claude/plugins/cc-status/config.json`:
 
 ## API Credentials
 
-Copy `.env.example` to `~/.claude/plugins/cc-status/.env` (or `~/Project/cc-status/.env`):
+The plugin reads from these locations (first found wins):
+
+1. `~/.claude/plugins/cc-status/.env`
+2. `~/.env`
+3. `$PWD/.env`
+
+Both formats are supported:
 
 ```bash
-# DeepSeek (required for balance display)
-DEEPSEEK_API_KEY=sk-...
+# Plain
+DEEPSEEK_API_KEY=sk-xxx
 
-# Kimi (required for Kimi quota)
-KIMI_COOKIE=eyJ...  # from browser: www.kimi.com → DevTools → Cookies
-
-# MiniMax (required for MiniMax quota)
-MINIMAX_API_KEY=sk-...
+# Or shell-style
+export DEEPSEEK_API_KEY=sk-xxx
 ```
 
-The plugin also checks `~/.env` and `$PWD/.env`.
+Required keys:
+
+| Key | For | How to get |
+|-----|-----|------------|
+| `DEEPSEEK_API_KEY` | DeepSeek balance | https://platform.deepseek.com → API keys |
+| `KIMI_COOKIE` | Kimi quota | Browser: www.kimi.com → DevTools → Cookies → `access_token` |
+| `MINIMAX_API_KEY` | MiniMax quota | https://platform.minimax.chat → API keys |
+
+All keys are optional — missing keys simply skip that platform's balance display.
 
 ## Supported Models
 
