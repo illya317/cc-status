@@ -45,7 +45,7 @@ Loads the newly installed commands. You should see `1 skill` in the output.
 
 ### Step 4: Configure the status line
 
-Add this to `~/.claude/settings.local.json`:
+Run `/cc-status:setup` to configure automatically, or add this to `~/.claude/settings.local.json`:
 
 ```json
 "statusLine": {
@@ -55,7 +55,7 @@ Add this to `~/.claude/settings.local.json`:
 }
 ```
 
-Or run `/cc-status:setup` to do it automatically. Restart Claude Code and you'll see the status bar.
+Restart Claude Code and you'll see the status bar.
 
 ---
 
