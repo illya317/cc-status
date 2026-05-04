@@ -65,7 +65,6 @@ export async function main() {
     const SHORT_NAMES = {
       'deepseek-v4-pro': 'DS Pro',
       'deepseek-v4-flash': 'DS Flash',
-      'kimi-k2.6': 'Kimi K2.6',
       'kimi': 'Kimi',
       'gpt-5.5': 'GPT-5.5',
       'minimax': 'MiniMax',
