@@ -27,7 +27,7 @@ function loadEnv() {
 
   const paths = [
     join(__dirname, '..', '.env'),
-    join(process.env.HOME || '', 'Project', 'cc-status', '.env'),
+    join(process.env.HOME || '', '.env'),
     join(process.cwd(), '.env'),
   ];
   for (const p of paths) {
