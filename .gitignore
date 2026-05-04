@@ -1,0 +1,14 @@
+# Secrets (API keys, cookies)
+.env
+
+# macOS
+.DS_Store
+
+# Cache / lock files from runtime
+.cc-status-cache.json
+.cc-status-cache.lock
+.cc-status-cache-*.json
+
+# IDE
+.vscode/
+.idea/

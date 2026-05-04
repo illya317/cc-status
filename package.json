@@ -1,0 +1,12 @@
+{
+  "name": "cc-status",
+  "version": "0.0.1",
+  "description": "Claude Code status line with third-party model cost, cache hit, and platform balance",
+  "type": "module",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["claude-code", "statusline", "plugin"],
+  "license": "MIT"
+}

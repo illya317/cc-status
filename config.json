@@ -1,0 +1,22 @@
+{
+  "segments": {
+    "model": true,
+    "project": true,
+    "context": true,
+    "cache": true,
+    "usage": true,
+    "cost": true
+  },
+  "thresholds": {
+    "context_green": 50,
+    "context_yellow": 80,
+    "cache_green": 90,
+    "cache_yellow": 80
+  },
+  "display": {
+    "context_bar_width": 5,
+    "usage_bar_width": 5,
+    "idle_cutoff_seconds": 3600,
+    "cache_ttl_seconds": 10
+  }
+}
