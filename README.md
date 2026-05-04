@@ -45,11 +45,17 @@ Loads the newly installed commands. You should see `1 skill` in the output.
 
 ### Step 4: Configure the status line
 
-```
-/cc-status:setup
+Add this to `~/.claude/settings.local.json`:
+
+```json
+"statusLine": {
+  "type": "command",
+  "command": "node ~/.claude/plugins/marketplaces/cc-status/dist/index.js",
+  "padding": 0
+}
 ```
 
-Writes the `statusLine` config to `~/.claude/settings.local.json`. Restart Claude Code afterwards and you'll see the status bar.
+Or run `/cc-status:setup` to do it automatically. Restart Claude Code and you'll see the status bar.
 
 ---
 
