@@ -143,9 +143,10 @@ async function fetchKimiRaw() {
   const detail = usages[0].detail || {};
   const limit = parseInt(detail.limit, 10) || 0;
   const used = parseInt(detail.used, 10) || 0;
-  const reset = detail.resetTime || '';
+  const resetTime = detail.resetTime || '';
   const pct = limit ? Math.round((used / limit) * 100) : 0;
-  return { percent: pct, reset: formatIsoRemaining(reset) };
+  const resetAtMs = resetTime ? new Date(resetTime).getTime() : 0;
+  return { percent: pct, resetAtMs };
 }
 
 async function fetchDeepseekRaw() {
@@ -187,7 +188,8 @@ async function fetchMinimaxRaw() {
       const used = r.current_interval_usage_count || 0;
       const rem = total - used;
       const pct = total > 0 ? Math.round((rem / total) * 100) : 0;
-      return { percent: pct, reset: formatMsRemaining(r.remains_time || 0) };
+      const resetAtMs = Date.now() + (r.remains_time || 0);
+      return { percent: pct, resetAtMs };
     }
   }
   return null;
@@ -206,7 +208,13 @@ export async function fetchPlatformData(cacheTtl = 10) {
 
   for (const key of ['kimi', 'deepseek', 'minimax']) {
     if (cache[key] && typeof cache[key] === 'object') {
-      platforms[key] = cache[key];
+      const pdata = { ...cache[key] };
+      // Format countdown timers fresh each time
+      if (pdata.resetAtMs) {
+        const delta = Math.floor((pdata.resetAtMs - Date.now()) / 1000);
+        pdata.reset = formatTimeRemaining(delta);
+      }
+      platforms[key] = pdata;
     }
   }
 
@@ -236,7 +244,9 @@ export async function fetchPlatformData(cacheTtl = 10) {
     const { key, data } = result.value;
     if (data) {
       cache[key] = data;
-      platforms[key] = data;
+      const pdata = { ...data };
+      if (pdata.resetAtMs) pdata.reset = formatTimeRemaining(Math.floor((pdata.resetAtMs - Date.now()) / 1000));
+      platforms[key] = pdata;
       updated = true;
     }
   }
