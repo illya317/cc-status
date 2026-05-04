@@ -1,7 +1,7 @@
 {
   "name": "cc-status",
   "description": "Single-line HUD with third-party model cost, cache hit rate, and platform balance (DeepSeek/Kimi/MiniMax)",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": {
     "name": "illya317"
   },
