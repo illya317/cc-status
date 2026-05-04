@@ -39,7 +39,9 @@ function loadEnv() {
         if (!trimmed || trimmed.startsWith('#')) continue;
         const eqIdx = trimmed.indexOf('=');
         if (eqIdx === -1) continue;
-        const key = trimmed.slice(0, eqIdx).trim();
+        let key = trimmed.slice(0, eqIdx).trim();
+        // Strip 'export ' prefix (shell-style .env)
+        if (key.startsWith('export ')) key = key.slice(7);
         let val = trimmed.slice(eqIdx + 1).trim();
         if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
           val = val.slice(1, -1);
