@@ -91,6 +91,7 @@ export function buildSegments(ctx) {
     if (modelLower.includes('kimi')) currentPlatform = 'kimi';
     else if (modelLower.includes('deepseek')) currentPlatform = 'deepseek';
     else if (modelLower.includes('minimax')) currentPlatform = 'minimax';
+    else if (modelLower.includes('glm')) currentPlatform = 'glm';
 
     if (currentPlatform && platformData[currentPlatform]) {
       const pdata = platformData[currentPlatform];

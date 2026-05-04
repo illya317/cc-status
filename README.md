@@ -6,7 +6,7 @@
 
 Claude Code HUD plugin — single-line status bar showing model, cache hit rate, idle timer, platform balance, and session cost.
 
-Supports **Claude official models** (cost from stdin) and **third-party models** (DeepSeek, Kimi, MiniMax, GPT-5.5) with real-time token tracking and pricing.
+Supports **Claude official models** (cost from stdin) and **third-party models** (DeepSeek, Kimi, MiniMax, GLM, GPT-5.5) with real-time token tracking and pricing.
 
 ## Features
 
@@ -14,7 +14,7 @@ Supports **Claude official models** (cost from stdin) and **third-party models**
 - **Project + Git** — directory name, git branch, dirty indicator
 - **Context window** — colored usage bar with percentage
 - **Cache hit rate** — percentage + idle timer (time since last assistant response)
-- **Platform balance** — real-time DeepSeek balance (¥), Kimi quota, MiniMax quota
+- **Platform balance** — real-time DeepSeek balance (¥), Kimi quota, MiniMax quota, GLM quota
 - **Session cost** — calculated from transcript token usage (includes sub-agent tokens)
 
 ## Install
@@ -120,6 +120,8 @@ Required keys:
 | `DEEPSEEK_API_KEY` | DeepSeek balance | https://platform.deepseek.com → API keys |
 | `KIMI_COOKIE` | Kimi quota | Browser: www.kimi.com → DevTools → Cookies → `access_token` |
 | `MINIMAX_API_KEY` | MiniMax quota | https://platform.minimax.chat → API keys |
+| `ANTHROPIC_AUTH_TOKEN` | GLM (Zhipu) quota | https://open.bigmodel.cn → API keys |
+| `ANTHROPIC_BASE_URL` | GLM base URL | Default: `https://open.bigmodel.cn/api/anthropic` |
 
 All keys are optional — missing keys simply skip that platform's balance display.
 
@@ -131,6 +133,7 @@ All keys are optional — missing keys simply skip that platform's balance displ
 | DeepSeek V4 Pro/Flash | ✓ | ✓ (promo) | ¥ balance |
 | Kimi / K2.6 | ✓ | ✓ | quota bar |
 | MiniMax M2.7 | ✓ | ✓ | quota bar |
+| GLM-5.1 | ✓ | ✓ (tiered) | quota bar |
 | GPT-5.5 | ✓ | ✓ | — |
 
 DeepSeek V4 Pro promotional pricing (2.5折) auto-detected until 2026-05-31.

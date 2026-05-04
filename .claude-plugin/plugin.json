@@ -1,14 +1,14 @@
 {
   "name": "cc-status",
-  "description": "Single-line HUD with third-party model cost, cache hit rate, and platform balance (DeepSeek/Kimi/MiniMax)",
-  "version": "0.0.3",
+  "description": "Single-line HUD with third-party model cost, cache hit rate, and platform balance (DeepSeek/Kimi/MiniMax/GLM)",
+  "version": "0.0.4",
   "author": {
     "name": "illya317"
   },
   "homepage": "https://github.com/illya317/cc-status",
   "repository": "https://github.com/illya317/cc-status",
   "license": "MIT",
-  "keywords": ["hud", "statusline", "cost", "deepseek", "kimi", "minimax", "balance"],
+  "keywords": ["hud", "statusline", "cost", "deepseek", "kimi", "minimax", "glm", "balance"],
   "category": "monitoring",
   "commands": ["./commands/"]
 }

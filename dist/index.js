@@ -73,6 +73,8 @@ export async function main() {
       modelName = 'mmx';
     } else if (ml.includes('gpt')) {
       modelName = 'gpt';
+    } else if (ml.includes('glm')) {
+      modelName = 'glm';
     }
     const cwd = stdinData.workspace?.current_dir || stdinData.cwd || '';
     const dirname = basename(cwd) || cwd;
@@ -117,7 +119,7 @@ export async function main() {
     // Platform balance
     let platformData = {};
     const modelLower = modelId.toLowerCase();
-    if (modelLower.includes('kimi') || modelLower.includes('deepseek') || modelLower.includes('minimax')) {
+    if (modelLower.includes('kimi') || modelLower.includes('deepseek') || modelLower.includes('minimax') || modelLower.includes('glm')) {
       platformData = await fetchPlatformData(dispCfg.cache_ttl_seconds);
     }
 

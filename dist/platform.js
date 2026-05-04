@@ -13,6 +13,7 @@ const DEEPSEEK_API_HOST = 'api.deepseek.com';
 const DEEPSEEK_API_PATH = '/user/balance';
 const MINIMAX_API_HOST = 'api.minimax.chat';
 const MINIMAX_API_PATH = '/v1/api/openplatform/coding_plan/remains';
+const GLM_DEFAULT_BASE = 'https://open.bigmodel.cn/api/anthropic';
 
 // ── Env helpers ────────────────────────────────────────────────
 
@@ -195,6 +196,47 @@ async function fetchMinimaxRaw() {
   return null;
 }
 
+async function fetchGlmRaw() {
+  const token = getEnv('ANTHROPIC_AUTH_TOKEN');
+  if (!token) return null;
+
+  const rawBase = getEnv('ANTHROPIC_BASE_URL') || GLM_DEFAULT_BASE;
+  let baseUrl = rawBase.replace(/\/+$/, '');
+  if (!baseUrl.startsWith('http')) baseUrl = 'https://' + baseUrl;
+
+  // Strip /anthropic suffix for monitor API (same as upstream glm-plan-usage)
+  baseUrl = baseUrl.replace('/api/anthropic', '/api').replace('/anthropic', '');
+
+  let hostname, basePath;
+  try {
+    const u = new URL(baseUrl);
+    hostname = u.hostname;
+    basePath = u.pathname.replace(/\/+$/, '');
+  } catch {
+    return null;
+  }
+
+  const data = await apiRequest(hostname, {
+    path: basePath + '/monitor/usage/quota/limit',
+    headers: { Authorization: `Bearer ${token}` },
+    timeout: 2000,
+  });
+  if (!data || !data.success) return null;
+
+  const items = (data.data && data.data.limits) || [];
+  // Prefer unit 6 (weekly), fallback to unit 3 (5-hour rolling)
+  const weekQuota = items.find(q => q.type === 'TOKENS_LIMIT' && q.unit === 6);
+  const hourQuota = items.find(q => q.type === 'TOKENS_LIMIT' && q.unit === 3);
+  const tokensQuota = weekQuota || hourQuota;
+  if (tokensQuota) {
+    const pct = tokensQuota.percentage != null ? Math.round(tokensQuota.percentage) : 0;
+    const resetAtMs = tokensQuota.nextResetTime || 0;
+    return { percent: pct, resetAtMs };
+  }
+
+  return null;
+}
+
 // ── Main entry ────────────────────────────────────────────────
 
 /**
@@ -206,7 +248,7 @@ export async function fetchPlatformData(cacheTtl = 10) {
   const cache = loadCache();
   const platforms = {};
 
-  for (const key of ['kimi', 'deepseek', 'minimax']) {
+  for (const key of ['kimi', 'deepseek', 'minimax', 'glm']) {
     if (cache[key] && typeof cache[key] === 'object') {
       const pdata = { ...cache[key] };
       // Format countdown timers fresh each time
@@ -225,6 +267,7 @@ export async function fetchPlatformData(cacheTtl = 10) {
     kimi: fetchKimiRaw,
     deepseek: fetchDeepseekRaw,
     minimax: fetchMinimaxRaw,
+    glm: fetchGlmRaw,
   };
 
   const results = await Promise.allSettled(

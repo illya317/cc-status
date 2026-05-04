@@ -30,7 +30,17 @@ const PRICES = {
     output: 30.00,
     currency: 'USD',
   },
+  'glm': {
+    input_cache_hit: 1.30,
+    input_cache_miss: 6.00,
+    output: 24.00,
+    currency: 'CNY',
+  },
 };
+
+// GLM tiered pricing: >32K tokens uses higher rate
+const GLM_TIER1 = { input_cache_hit: 1.30, input_cache_miss: 6.00, output: 24.00 };
+const GLM_TIER2 = { input_cache_hit: 2.00, input_cache_miss: 8.00, output: 28.00 };
 
 // DeepSeek V4 Pro promo: 2.5折 until May 31 2026 15:59 UTC
 const DS_V4_PRO_PROMO = {
@@ -73,16 +83,24 @@ export function resolvePrice(modelId) {
   return null;
 }
 
-function calcSingle(usage, price) {
+function calcSingle(usage, price, modelId = '') {
+  let effectivePrice = price;
+
+  // GLM tiered pricing: >32K total input tokens uses higher rate
+  if (modelId && modelId.toLowerCase().includes('glm')) {
+    const totalInput = (usage.input_tokens || 0) + (usage.cache_read_input_tokens || 0) + (usage.cache_creation_input_tokens || 0);
+    effectivePrice = totalInput <= 32000 ? GLM_TIER1 : GLM_TIER2;
+  }
+
   const cacheRead = usage.cache_read_input_tokens || 0;
   const input = usage.input_tokens || 0;
   const cacheCreation = usage.cache_creation_input_tokens || 0;
   const output = usage.output_tokens || 0;
 
   return (
-    cacheRead * price.input_cache_hit +
-    (input + cacheCreation) * price.input_cache_miss +
-    output * price.output
+    cacheRead * effectivePrice.input_cache_hit +
+    (input + cacheCreation) * effectivePrice.input_cache_miss +
+    output * effectivePrice.output
   ) / 1_000_000;
 }
 
@@ -102,7 +120,7 @@ export function calcCost(calls, sessionModel = '') {
     const price = resolvePrice(model);
     if (!price) continue;
     currency = price.currency;
-    totalCost += calcSingle(call, price);
+    totalCost += calcSingle(call, price, model);
   }
 
   if (totalCost === 0) return null;
