@@ -19,22 +19,47 @@ Supports **Claude official models** (cost from stdin) and **third-party models**
 
 ## Install
 
+### Step 1: Add the marketplace
+
 ```
 /plugin marketplace add illya317/cc-status
+```
+
+Registers `illya317/cc-status` as a plugin source. Claude Code clones the repo to `~/.claude/plugins/marketplaces/cc-status/`.
+
+### Step 2: Install the plugin
+
+```
 /plugin install cc-status
+```
+
+Choose **Install for you (user scope)**. Copies the plugin into the cache and activates the `/cc-status:setup` command.
+
+### Step 3: Reload
+
+```
 /reload-plugins
+```
+
+Loads the newly installed commands. You should see `1 skill` in the output.
+
+### Step 4: Configure the status line
+
+```
 /cc-status:setup
 ```
 
-Restart Claude Code to see the status line.
+Writes the `statusLine` config to `~/.claude/settings.local.json`. Restart Claude Code afterwards and you'll see the status bar.
 
-Or manually:
+---
+
+### Manual install
 
 ```bash
 git clone https://github.com/illya317/cc-status.git ~/.claude/plugins/marketplaces/cc-status
 ```
 
-Then add to `~/.claude/settings.json`:
+Then add to `~/.claude/settings.local.json`:
 
 ```json
 "statusLine": {
