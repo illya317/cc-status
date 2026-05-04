@@ -90,6 +90,7 @@ Edit `~/.claude/plugins/marketplaces/cc-status/config.json`:
 | `segments.cost` | `true` | Show session cost |
 | `thresholds.cache_green` | `90` | Cache rate ≥ this → green |
 | `thresholds.cache_yellow` | `80` | Cache rate ≥ this → yellow |
+| `display.layout` | `compact` | `compact` (single line) or `split` (line 1: model + dir, line 2: rest) |
 | `display.context_bar_width` | `5` | Context bar character width |
 | `display.idle_cutoff_seconds` | `3600` | Hide idle timer after this |
 | `display.cache_ttl_seconds` | `10` | Balance cache refresh interval |

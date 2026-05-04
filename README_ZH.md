@@ -91,6 +91,7 @@ git clone https://github.com/illya317/cc-status.git ~/.claude/plugins/marketplac
 | `segments.cost` | `true` | 显示会话费用 |
 | `thresholds.cache_green` | `90` | 缓存率 ≥ 此值 → 绿色 |
 | `thresholds.cache_yellow` | `80` | 缓存率 ≥ 此值 → 黄色 |
+| `display.layout` | `compact` | `compact`（单行）或 `split`（第一行：模型+目录，第二行：其余） |
 | `display.context_bar_width` | `5` | 上下文条字符宽度 |
 | `display.idle_cutoff_seconds` | `3600` | 空闲计时超过此秒数隐藏 |
 | `display.cache_ttl_seconds` | `10` | 余额缓存刷新间隔 |
