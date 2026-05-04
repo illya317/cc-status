@@ -124,7 +124,7 @@ export async function calcIdleTime(transcriptPath, cutoffSeconds = 3600) {
 
   if (totalSeconds < 0 || totalSeconds >= cutoffSeconds) return '';
   if (totalSeconds < 60) return `${totalSeconds}s`;
-  if (totalSeconds < 3600) return `${Math.round(totalSeconds / 60)}m`;
-  if (totalSeconds < 86400) return `${Math.round(totalSeconds / 3600)}h`;
-  return `${Math.round(totalSeconds / 86400)}d`;
+  if (totalSeconds < 3600) return `${Math.floor(totalSeconds / 60)}m`;
+  if (totalSeconds < 86400) return `${Math.floor(totalSeconds / 3600)}h`;
+  return `${Math.floor(totalSeconds / 86400)}d`;
 }
