@@ -18,6 +18,7 @@ const DEFAULT_CONFIG = {
     cache_yellow: 80,
   },
   display: {
+    layout: 'compact',
     context_bar_width: 5,
     usage_bar_width: 5,
     idle_cutoff_seconds: 3600,

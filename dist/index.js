@@ -130,7 +130,7 @@ export async function main() {
     };
 
     const segments = buildSegments(ctx);
-    console.log(render(segments));
+    console.log(render(segments, dispCfg.layout));
   } catch (err) {
     console.error('[cc-status]', err.message);
   }

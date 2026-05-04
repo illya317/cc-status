@@ -21,27 +21,29 @@ export const COLORS = {
   red: '#f87171',
 };
 
-/**
- * Build a Unicode block-element progress bar.
- */
 export function usageBar(pct, width = 5) {
   const filled = Math.round((pct / 100) * width);
   return '█'.repeat(filled) + '░'.repeat(width - filled);
 }
 
-/**
- * Join segments with a dim separator.
- */
-export function render(segments) {
+function joinSegments(segments) {
   const sep = ansiFg(COLORS.fg_dim) + ' │ ' + ansiReset();
   return segments.map(s => ansiFg(s.fg) + s.text + ansiReset()).join(sep);
 }
 
-/**
- * Build all display segments from the context object.
- */
+export function render(segments, layout) {
+  if (layout === 'split' && segments.length >= 3) {
+    // Line 1: model + project
+    // Line 2: context, cache, usage, cost
+    const top = segments.slice(0, 2);
+    const bottom = segments.slice(2);
+    return joinSegments(top) + '\n' + joinSegments(bottom);
+  }
+  return joinSegments(segments);
+}
+
 export function buildSegments(ctx) {
-  const { modelName, cwd, dirname, pct, ctxWidth, platWidth, cacheHitRate,
+  const { modelName, dirname, pct, ctxWidth, platWidth, cacheHitRate,
           idleStr, costStr, git, platformData, thresholds, segCfg, modelId } = ctx;
   const segments = [];
 
@@ -72,18 +74,13 @@ export function buildSegments(ctx) {
   // 4. Cache + idle timer
   if (segCfg.cache) {
     const parts = [];
-
     let pctColor = COLORS.red;
     if (cacheHitRate >= thresholds.cache_green) pctColor = COLORS.green;
     else if (cacheHitRate >= thresholds.cache_yellow) pctColor = COLORS.yellow;
 
     parts.push(ansiFg(COLORS.fg_dim) + 'Cache' + ansiReset());
     parts.push(ansiFg(pctColor) + Math.round(cacheHitRate) + '%' + ansiReset());
-
-    if (idleStr) {
-      parts.push(idleStr);
-    }
-
+    if (idleStr) parts.push(idleStr);
     segments.push({ text: parts.join(' '), fg: COLORS.fg_light });
   }
 
