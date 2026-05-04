@@ -64,8 +64,8 @@ export async function main() {
     // Shorten third-party model names (fuzzy match, all lowercase)
     const ml = modelId.toLowerCase();
     if (ml.includes('deepseek')) {
-      if (ml.includes('pro')) modelName = 'ds pro';
-      else if (ml.includes('flash')) modelName = 'ds flash';
+      if (ml.includes('pro')) modelName = 'ds-pro';
+      else if (ml.includes('flash')) modelName = 'ds-flash';
       else modelName = 'ds';
     } else if (ml.includes('kimi')) {
       modelName = 'kimi';
