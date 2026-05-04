@@ -12,13 +12,13 @@ Supports **Claude official models** (cost from stdin) and **third-party models**
 - **Cache hit rate** — percentage + idle timer (time since last assistant response)
 - **Platform balance** — real-time DeepSeek balance (¥), Kimi quota, MiniMax quota
 - **Session cost** — calculated from transcript token usage (includes sub-agent tokens)
-- **Agent token tracking** — counts `toolUseResult.usage` from sub-agent calls
 
 ## Install
 
 ```
 /plugin marketplace add illya317/cc-status
 /plugin install cc-status
+/reload-plugins
 /cc-status:setup
 ```
 
