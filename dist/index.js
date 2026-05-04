@@ -60,7 +60,19 @@ export async function main() {
     const dispCfg = cfg.display;
 
     const modelId = stdinData.model?.id || '';
-    const modelName = stdinData.model?.display_name || '?';
+    let modelName = stdinData.model?.display_name || '?';
+    // Shorten third-party model names
+    const SHORT_NAMES = {
+      'deepseek-v4-pro': 'DS Pro',
+      'deepseek-v4-flash': 'DS Flash',
+      'kimi-k2.6': 'Kimi K2.6',
+      'kimi': 'Kimi',
+      'gpt-5.5': 'GPT-5.5',
+      'minimax': 'MiniMax',
+    };
+    for (const [key, val] of Object.entries(SHORT_NAMES)) {
+      if (modelId.toLowerCase().includes(key)) { modelName = val; break; }
+    }
     const cwd = stdinData.workspace?.current_dir || stdinData.cwd || '';
     const dirname = basename(cwd) || cwd;
     const transcriptPath = stdinData.transcript_path || '';
