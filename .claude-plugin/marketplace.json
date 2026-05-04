@@ -1,0 +1,9 @@
+{
+  "name": "cc-status",
+  "version": "0.0.1",
+  "description": "Single-line HUD with third-party model cost, cache hit rate, and platform balance (DeepSeek/Kimi/MiniMax)",
+  "author": "illya317",
+  "license": "MIT",
+  "homepage": "https://github.com/illya317/cc-status",
+  "keywords": ["statusline", "hud", "cost", "deepseek", "kimi", "minimax"]
+}
