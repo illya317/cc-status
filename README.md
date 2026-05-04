@@ -16,36 +16,27 @@ Supports **Claude official models** (cost from stdin) and **third-party models**
 
 ## Install
 
-1. Register the plugin in `~/.claude/settings.json`:
-
-```json
-{
-  "extraKnownMarketplaces": {
-    "cc-status": {
-      "source": {
-        "source": "github",
-        "repo": "illya317/cc-status"
-      }
-    }
-  }
-}
+```
+/plugin marketplace add illya317/cc-status
+/plugin install cc-status
+/cc-status:setup
 ```
 
-Or install manually:
+Restart Claude Code to see the status line.
+
+Or manually:
 
 ```bash
 git clone https://github.com/illya317/cc-status.git ~/.claude/plugins/cc-status
 ```
 
-2. Set `statusLine` in `~/.claude/settings.json` (or `settings.local.json`):
+Then add to `~/.claude/settings.json`:
 
 ```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "node ~/.claude/plugins/cc-status/dist/index.js",
-    "padding": 0
-  }
+"statusLine": {
+  "type": "command",
+  "command": "node ~/.claude/plugins/cc-status/dist/index.js",
+  "padding": 0
 }
 ```
 
