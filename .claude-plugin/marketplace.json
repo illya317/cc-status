@@ -1,20 +1,13 @@
 {
   "name": "cc-status",
   "owner": {
-    "name": "illya317",
-    "email": "illya317@github.com"
-  },
-  "metadata": {
-    "description": "Single-line HUD with third-party model cost, cache hit rate, and platform balance (DeepSeek/Kimi/MiniMax)",
-    "version": "0.0.1"
+    "name": "illya317"
   },
   "plugins": [
     {
       "name": "cc-status",
       "source": "./",
-      "description": "Status line showing model, cache hit rate, idle timer, platform balance (DeepSeek/Kimi/MiniMax), and session cost",
-      "category": "monitoring",
-      "tags": ["hud", "statusline", "cost", "deepseek", "kimi", "minimax", "balance"]
+      "description": "Single-line HUD with third-party model cost, cache hit rate, and platform balance"
     }
   ]
 }
