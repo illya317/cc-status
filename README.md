@@ -51,7 +51,8 @@ Run `/cc-status:setup` to configure automatically, or add this to `~/.claude/set
 "statusLine": {
   "type": "command",
   "command": "node ~/.claude/plugins/marketplaces/cc-status/dist/index.js",
-  "padding": 0
+  "padding": 0,
+  "refreshInterval": 1
 }
 ```
 

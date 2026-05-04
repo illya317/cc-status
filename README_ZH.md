@@ -51,7 +51,8 @@ Claude Code HUD 插件 —— 单行状态栏，显示模型、缓存命中率�
 "statusLine": {
   "type": "command",
   "command": "node ~/.claude/plugins/marketplaces/cc-status/dist/index.js",
-  "padding": 0
+  "padding": 0,
+  "refreshInterval": 1
 }
 ```
 
@@ -71,7 +72,8 @@ git clone https://github.com/illya317/cc-status.git ~/.claude/plugins/marketplac
 "statusLine": {
   "type": "command",
   "command": "node ~/.claude/plugins/marketplaces/cc-status/dist/index.js",
-  "padding": 0
+  "padding": 0,
+  "refreshInterval": 1
 }
 ```
 
