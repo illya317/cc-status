@@ -17,6 +17,7 @@ Supports **Claude official models** (cost from stdin) and **third-party models**
 
 ```
 /plugin marketplace add illya317/cc-status
+/plugin install cc-status
 /reload-plugins
 /cc-status:setup
 ```
