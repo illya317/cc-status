@@ -14,7 +14,7 @@ If `statusLine` is not already set to cc-status in `settings.local.json`, write 
 ```json
 "statusLine": {
   "type": "command",
-  "command": "node ~/.claude/plugins/cc-status/dist/index.js",
+  "command": "node ~/.claude/plugins/marketplaces/cc-status/dist/index.js",
   "padding": 0
 }
 ```
@@ -23,7 +23,7 @@ Prefer `settings.local.json` so it overrides global settings. Merge it with exis
 
 ## Step 2: Verify
 
-Run `echo '{"model":{"id":"deepseek-v4-pro","display_name":"Test"}}' | node ~/.claude/plugins/cc-status/dist/index.js` to verify the plugin works.
+Run `echo '{"model":{"id":"deepseek-v4-pro","display_name":"Test"}}' | node ~/.claude/plugins/marketplaces/cc-status/dist/index.js` to verify the plugin works.
 
 ## Step 3: Done
 
@@ -33,4 +33,4 @@ Tell the user:
   - `DEEPSEEK_API_KEY` — DeepSeek balance
   - `KIMI_COOKIE` — Kimi quota (browser cookie from kimi.com)
   - `MINIMAX_API_KEY` — MiniMax quota
-- **Config**: edit `~/.claude/plugins/cc-status/config.json` to toggle segments or adjust thresholds
+- **Config**: edit `~/.claude/plugins/marketplaces/cc-status/config.json` to toggle segments or adjust thresholds

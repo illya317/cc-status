@@ -20,7 +20,7 @@ Claude Code status-line plugin. Reads stdin JSON, outputs a colored single-line 
 
 ## Config
 
-`~/.claude/plugins/cc-status/config.json` — edit to toggle segments or adjust thresholds.
+`~/.claude/plugins/marketplaces/cc-status/config.json` — edit to toggle segments or adjust thresholds.
 
 ## Env
 
