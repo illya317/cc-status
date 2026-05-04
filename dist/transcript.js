@@ -36,6 +36,7 @@ export async function parseTranscript(transcriptPath) {
           if (msgId) seenIds.add(msgId);
 
           const call = {
+            model: msg.model || data.model || '',
             input_tokens: u.input_tokens || 0,
             cache_read_input_tokens: u.cache_read_input_tokens || 0,
             cache_creation_input_tokens: u.cache_creation_input_tokens || 0,
@@ -54,6 +55,7 @@ export async function parseTranscript(transcriptPath) {
         if (tur && typeof tur === 'object' && tur.usage) {
           const tu = tur.usage;
           const call = {
+            model: data.model || '',
             input_tokens: tu.input_tokens || 0,
             cache_read_input_tokens: tu.cache_read_input_tokens || 0,
             cache_creation_input_tokens: tu.cache_creation_input_tokens || 0,

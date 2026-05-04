@@ -89,7 +89,7 @@ export async function main() {
       const { usage, calls } = await parseTranscript(transcriptPath);
       if (usage) {
         cacheHitRate = calcCacheHitRate(usage);
-        const costResult = calcCost(calls.length > 0 ? calls : usage, modelId);
+        const costResult = calcCost(calls, modelId);
         if (costResult) {
           const sym = costResult.currency === 'CNY' ? '¥' : '$';
           costStr = `${sym}${costResult.cost.toFixed(2)}`;

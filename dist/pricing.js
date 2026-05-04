@@ -87,21 +87,24 @@ function calcSingle(usage, price) {
 }
 
 /**
- * Calculate cost. Accepts single usage dict or array of per-call dicts.
+ * Calculate cost. Accepts array of per-call dicts (each with optional model).
+ * Prices each call by its own model, falling back to sessionModel.
  * Returns { cost: number, currency: 'CNY'|'USD' } or null.
  */
-export function calcCost(usage, modelId) {
-  const price = resolvePrice(modelId);
-  if (!price) return null;
+export function calcCost(calls, sessionModel = '') {
+  if (!Array.isArray(calls) || calls.length === 0) return null;
 
   let totalCost = 0;
-  if (Array.isArray(usage)) {
-    for (const call of usage) {
-      totalCost += calcSingle(call, price);
-    }
-  } else {
-    totalCost = calcSingle(usage, price);
+  let currency = 'CNY';
+
+  for (const call of calls) {
+    const model = call.model || sessionModel || '';
+    const price = resolvePrice(model);
+    if (!price) continue;
+    currency = price.currency;
+    totalCost += calcSingle(call, price);
   }
 
-  return { cost: totalCost, currency: price.currency };
+  if (totalCost === 0) return null;
+  return { cost: totalCost, currency };
 }
