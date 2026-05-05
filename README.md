@@ -16,6 +16,7 @@ Supports **Claude official models** (cost from stdin) and **third-party models**
 - **Cache hit rate** — percentage + idle timer (time since last assistant response)
 - **Platform balance** — real-time DeepSeek balance (¥), Kimi quota, MiniMax quota, GLM quota
 - **Session cost** — calculated from transcript token usage (includes sub-agent tokens)
+- **Agent monitoring** — shows running/completed Agent sub-tasks with elapsed time (compact line 2, split line 3)
 
 ## Install
 
