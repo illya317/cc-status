@@ -4,9 +4,9 @@ Claude Code status-line plugin. Reads stdin JSON, outputs a colored single-line 
 
 ## Files
 
-- `dist/index.js` — entry point: reads stdin, detects statusLine/subagentStatusLine mode, outputs accordingly
+- `dist/index.js` — entry point: reads stdin, orchestrates, outputs status line with agent info
 - `dist/config.js` — loads config.json with defaults
-- `dist/transcript.js` — parses JSONL transcript for token usage and idle time
+- `dist/transcript.js` — single-pass JSONL parser: token usage, idle timestamp, agent detection
 - `dist/pricing.js` — model pricing tables and cost calculation
 - `dist/platform.js` — DeepSeek/Kimi/MiniMax balance API queries with caching
 - `dist/cache.js` — file-based JSON cache at ~/.claude/.cc-status-cache.json

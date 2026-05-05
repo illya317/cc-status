@@ -41,14 +41,14 @@ export function render({ segments, agentSegment }, layout) {
     output = joinSegments(segments);
   }
   if (agentSegment) {
-    output += '\n' + joinSegments([agentSegment]);
+    output += '\n' + agentSegment;
   }
   return output;
 }
 
 export function buildSegments(ctx) {
   const { modelName, dirname, pct, ctxWidth, platWidth, cacheHitRate,
-          idleStr, costStr, git, platformData, thresholds, segCfg, modelId, agentName } = ctx;
+          idleStr, costStr, git, platformData, thresholds, segCfg, modelId, agents } = ctx;
   const segments = [];
   let agentSegment = null;
 
@@ -117,27 +117,41 @@ export function buildSegments(ctx) {
     segments.push({ text: costStr, fg: COLORS.fg_light });
   }
 
-  // 7. Agent
-  if (agentName) {
-    agentSegment = { text: `agent:${agentName}`, fg: COLORS.lavender };
+  // 7. Agents from transcript
+  if (agents && agents.length > 0) {
+    const lines = agents.map(a => formatAgentLine(a)).filter(Boolean);
+    if (lines.length > 0) {
+      agentSegment = lines.join('\n');
+    }
   }
 
   return { segments, agentSegment };
 }
 
-export function renderSubagentRows(tasks) {
-  return tasks.map(t => {
-    const statusColor = t.status === 'running' ? COLORS.green
-      : t.status === 'error' ? COLORS.red
-      : COLORS.fg_dim;
-    const label = t.name || t.label || t.id || '?';
-    const parts = [
-      ansiFg(COLORS.fg_light) + label + ansiReset(),
-      ansiFg(statusColor) + t.status + ansiReset(),
-    ];
-    if (t.tokenCount) {
-      parts.push(ansiFg(COLORS.fg_dim) + t.tokenCount + 't' + ansiReset());
-    }
-    return { id: t.id, content: parts.join(' ') };
-  });
+function formatAgentLine(agent) {
+  const statusIcon = agent.status === 'running'
+    ? ansiFg(COLORS.yellow) + '◐' + ansiReset()
+    : ansiFg(COLORS.green) + '✓' + ansiReset();
+  const type = ansiFg(COLORS.lavender) + agent.type + ansiReset();
+  const desc = agent.description
+    ? ' ' + ansiFg(COLORS.fg_light) + truncate(agent.description, 50) + ansiReset()
+    : '';
+  const elapsed = formatElapsed(agent);
+  const el = elapsed ? ' ' + ansiFg(COLORS.fg_dim) + '(' + elapsed + ')' + ansiReset() : '';
+  return `${statusIcon} ${type}${desc}${el}`;
+}
+
+function truncate(str, max) {
+  if (str.length <= max) return str;
+  return str.slice(0, max - 3) + '...';
+}
+
+function formatElapsed(agent) {
+  const start = agent.startTime?.getTime?.() ?? agent.startTime;
+  if (!start) return '';
+  const end = agent.endTime?.getTime?.() ?? agent.endTime ?? Date.now();
+  const ms = Math.max(0, end - start);
+  if (ms < 1000) return '<1s';
+  if (ms < 60000) return Math.round(ms / 1000) + 's';
+  return Math.floor(ms / 60000) + 'm ' + Math.floor((ms % 60000) / 1000) + 's';
 }

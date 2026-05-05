@@ -4,7 +4,7 @@ import { parseTranscript, calcCacheHitRate, calcIdleTime } from './transcript.js
 import { calcCost } from './pricing.js';
 import { getGitInfo } from './git.js';
 import { fetchPlatformData } from './platform.js';
-import { buildSegments, render, renderSubagentRows } from './render.js';
+import { buildSegments, render } from './render.js';
 
 /**
  * Read JSON from stdin (piped from Claude Code).
@@ -54,15 +54,6 @@ export async function main() {
       return;
     }
 
-    // subagentStatusLine mode: tasks array present
-    if (stdinData.tasks && Array.isArray(stdinData.tasks)) {
-      const rows = renderSubagentRows(stdinData.tasks);
-      for (const row of rows) {
-        console.log(JSON.stringify(row));
-      }
-      return;
-    }
-
     const cfg = loadConfig();
     const segCfg = cfg.segments;
     const thrCfg = cfg.thresholds;
@@ -96,11 +87,14 @@ export async function main() {
     let cacheHitRate = 0;
     let costStr = '';
 
+    // Single transcript parse: usage, idle, agents
+    let agents = [];
+    let lastTs = null;
     if (isThirdParty) {
-      const { usage, calls } = await parseTranscript(transcriptPath);
-      if (usage) {
-        cacheHitRate = calcCacheHitRate(usage);
-        const costResult = calcCost(calls, modelId);
+      const result = await parseTranscript(transcriptPath);
+      if (result.usage) {
+        cacheHitRate = calcCacheHitRate(result.usage);
+        const costResult = calcCost(result.calls, modelId);
         if (costResult) {
           const sym = costResult.currency === 'CNY' ? '¥' : '$';
           costStr = `${sym}${costResult.cost.toFixed(2)}`;
@@ -111,19 +105,25 @@ export async function main() {
         cacheHitRate = 0;
         costStr = '?';
       }
+      lastTs = result.lastTs;
+      agents = result.agents;
     } else {
       // Claude official: use stdin cost and context_window.current_usage
       const usage = ctxWindow.current_usage || {};
       cacheHitRate = calcCacheHitRate(usage);
       const totalCost = stdinData.cost?.total_cost_usd || 0;
       costStr = `$${totalCost.toFixed(2)}`;
+      // Still parse transcript for agents (official model too)
+      const result = await parseTranscript(transcriptPath);
+      agents = result.agents;
+      lastTs = result.lastTs;
     }
 
     // Git info
     const git = await getGitInfo(cwd);
 
-    // Idle timer
-    const idleStr = await calcIdleTime(transcriptPath, dispCfg.idle_cutoff_seconds);
+    // Idle timer (from parsed lastTs, not file re-read)
+    const idleStr = calcIdleTime(lastTs, dispCfg.idle_cutoff_seconds);
 
     // Platform balance
     let platformData = {};
@@ -132,14 +132,12 @@ export async function main() {
       platformData = await fetchPlatformData(dispCfg.cache_ttl_seconds);
     }
 
-    const agentName = stdinData.agent?.name || '';
-
     const ctx = {
       modelId, modelName, cwd, dirname,
       pct, ctxWidth: dispCfg.context_bar_width,
       platWidth: dispCfg.usage_bar_width,
       cacheHitRate, idleStr, costStr, git, platformData,
-      thresholds: thrCfg, segCfg, agentName,
+      thresholds: thrCfg, segCfg, agents,
     };
 
     const segments = buildSegments(ctx);
