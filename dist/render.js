@@ -31,21 +31,26 @@ function joinSegments(segments) {
   return segments.map(s => ansiFg(s.fg) + s.text + ansiReset()).join(sep);
 }
 
-export function render(segments, layout) {
+export function render({ segments, agentSegment }, layout) {
+  let output;
   if (layout === 'split' && segments.length >= 3) {
-    // Line 1: model + project
-    // Line 2: context, cache, usage, cost
     const top = segments.slice(0, 2);
     const bottom = segments.slice(2);
-    return joinSegments(top) + '\n' + joinSegments(bottom);
+    output = joinSegments(top) + '\n' + joinSegments(bottom);
+  } else {
+    output = joinSegments(segments);
   }
-  return joinSegments(segments);
+  if (agentSegment) {
+    output += '\n' + joinSegments([agentSegment]);
+  }
+  return output;
 }
 
 export function buildSegments(ctx) {
   const { modelName, dirname, pct, ctxWidth, platWidth, cacheHitRate,
-          idleStr, costStr, git, platformData, thresholds, segCfg, modelId } = ctx;
+          idleStr, costStr, git, platformData, thresholds, segCfg, modelId, agentName } = ctx;
   const segments = [];
+  let agentSegment = null;
 
   // 1. Model
   if (segCfg.model) {
@@ -112,5 +117,27 @@ export function buildSegments(ctx) {
     segments.push({ text: costStr, fg: COLORS.fg_light });
   }
 
-  return segments;
+  // 7. Agent
+  if (agentName) {
+    agentSegment = { text: `agent:${agentName}`, fg: COLORS.lavender };
+  }
+
+  return { segments, agentSegment };
+}
+
+export function renderSubagentRows(tasks) {
+  return tasks.map(t => {
+    const statusColor = t.status === 'running' ? COLORS.green
+      : t.status === 'error' ? COLORS.red
+      : COLORS.fg_dim;
+    const label = t.name || t.label || t.id || '?';
+    const parts = [
+      ansiFg(COLORS.fg_light) + label + ansiReset(),
+      ansiFg(statusColor) + t.status + ansiReset(),
+    ];
+    if (t.tokenCount) {
+      parts.push(ansiFg(COLORS.fg_dim) + t.tokenCount + 't' + ansiReset());
+    }
+    return { id: t.id, content: parts.join(' ') };
+  });
 }

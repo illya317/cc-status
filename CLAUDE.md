@@ -4,7 +4,7 @@ Claude Code status-line plugin. Reads stdin JSON, outputs a colored single-line 
 
 ## Files
 
-- `dist/index.js` — entry point: reads stdin, orchestrates, outputs status line
+- `dist/index.js` — entry point: reads stdin, detects statusLine/subagentStatusLine mode, outputs accordingly
 - `dist/config.js` — loads config.json with defaults
 - `dist/transcript.js` — parses JSONL transcript for token usage and idle time
 - `dist/pricing.js` — model pricing tables and cost calculation

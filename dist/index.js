@@ -4,7 +4,7 @@ import { parseTranscript, calcCacheHitRate, calcIdleTime } from './transcript.js
 import { calcCost } from './pricing.js';
 import { getGitInfo } from './git.js';
 import { fetchPlatformData } from './platform.js';
-import { buildSegments, render } from './render.js';
+import { buildSegments, render, renderSubagentRows } from './render.js';
 
 /**
  * Read JSON from stdin (piped from Claude Code).
@@ -51,6 +51,15 @@ export async function main() {
     const stdinData = await readStdin();
     if (!stdinData) {
       console.log('[cc-status] waiting for stdin...');
+      return;
+    }
+
+    // subagentStatusLine mode: tasks array present
+    if (stdinData.tasks && Array.isArray(stdinData.tasks)) {
+      const rows = renderSubagentRows(stdinData.tasks);
+      for (const row of rows) {
+        console.log(JSON.stringify(row));
+      }
       return;
     }
 
@@ -123,12 +132,14 @@ export async function main() {
       platformData = await fetchPlatformData(dispCfg.cache_ttl_seconds);
     }
 
+    const agentName = stdinData.agent?.name || '';
+
     const ctx = {
       modelId, modelName, cwd, dirname,
       pct, ctxWidth: dispCfg.context_bar_width,
       platWidth: dispCfg.usage_bar_width,
       cacheHitRate, idleStr, costStr, git, platformData,
-      thresholds: thrCfg, segCfg,
+      thresholds: thrCfg, segCfg, agentName,
     };
 
     const segments = buildSegments(ctx);
