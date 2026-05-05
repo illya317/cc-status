@@ -143,6 +143,9 @@ export async function parseTranscript(transcriptPath) {
         if (content && Array.isArray(content)) {
           for (const block of content) {
             if (block.type === 'tool_use' && block.id && (block.name === 'Task' || block.name === 'Agent')) {
+              // Don't overwrite existing agent (same tool_use_id may re-appear
+              // when agent output is incorporated into the conversation)
+              if (agentMap.has(block.id)) continue;
               const input = block.input;
               const ts = data.timestamp ? new Date(data.timestamp) : new Date();
               agentMap.set(block.id, {
@@ -154,20 +157,14 @@ export async function parseTranscript(transcriptPath) {
                 isBackground: input?.run_in_background === true,
               });
             }
-            // tool_result: foreground agents complete on first result.
-            // Background agents get two results: launch confirm (skip)
-            // then actual completion later (accept).
+            // tool_result marks completion.
+            // Note: background agents only get a launch-confirm tool_result
+            // (not actual completion), so elapsed time will be short.
             if (block.type === 'tool_result' && block.tool_use_id) {
               const agent = agentMap.get(block.tool_use_id);
               if (agent) {
-                agent.toolResultCount = (agent.toolResultCount || 0) + 1;
-                const isDone = agent.isBackground
-                  ? agent.toolResultCount >= 2
-                  : agent.toolResultCount >= 1;
-                if (isDone) {
-                  agent.status = 'completed';
-                  agent.endTime = data.timestamp ? new Date(data.timestamp) : new Date();
-                }
+                agent.status = 'completed';
+                agent.endTime = data.timestamp ? new Date(data.timestamp) : new Date();
               }
             }
           }
