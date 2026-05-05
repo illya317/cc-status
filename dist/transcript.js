@@ -142,23 +142,16 @@ export async function parseTranscript(transcriptPath) {
         const content = data.message?.content;
         if (content && Array.isArray(content)) {
           for (const block of content) {
-            const isBg = block.input?.run_in_background === true;
-            const isMonitored = block.name === 'Task' || block.name === 'Agent'
-              || (block.name === 'Bash' && isBg);
-            if (block.type === 'tool_use' && block.id && isMonitored) {
+            if (block.type === 'tool_use' && block.id && (block.name === 'Task' || block.name === 'Agent')) {
               const input = block.input;
               const ts = data.timestamp ? new Date(data.timestamp) : new Date();
-              const type = block.name === 'Bash' ? 'bash' : (input?.subagent_type ?? 'agent');
-              const desc = input?.description || input?.prompt?.slice(0, 80)
-                || (block.name === 'Bash' ? (input?.command || '').slice(0, 50) : '')
-                || '';
               agentMap.set(block.id, {
                 id: block.id,
-                type,
+                type: input?.subagent_type ?? 'agent',
                 status: 'running',
-                description: desc,
+                description: input?.description || input?.prompt?.slice(0, 80) || '',
                 startTime: ts,
-                isBackground: isBg,
+                isBackground: input?.run_in_background === true,
               });
             }
             // tool_result: foreground agents complete on first result.
@@ -189,8 +182,8 @@ export async function parseTranscript(transcriptPath) {
   const agentsList = Array.from(agentMap.values());
   const running = agentsList.filter(a => a.status === 'running');
   const completed = agentsList.filter(a => a.status === 'completed');
-  // Max 2 completed, max 3 total (same as claude-hud)
-  const agents = [...running, ...completed.slice(-2)].slice(-3);
+  // Running first (most recent 3), then last 2 completed, max 5 total
+  const agents = [...running.slice(-3), ...completed.slice(-2)].slice(-5);
 
   const result = { usage: calls.length > 0 ? usage : null, calls, lastTs, agents };
 
