@@ -142,16 +142,23 @@ export async function parseTranscript(transcriptPath) {
         const content = data.message?.content;
         if (content && Array.isArray(content)) {
           for (const block of content) {
-            if (block.type === 'tool_use' && block.id && (block.name === 'Task' || block.name === 'Agent')) {
+            const isBg = block.input?.run_in_background === true;
+            const isMonitored = block.name === 'Task' || block.name === 'Agent'
+              || (block.name === 'Bash' && isBg);
+            if (block.type === 'tool_use' && block.id && isMonitored) {
               const input = block.input;
               const ts = data.timestamp ? new Date(data.timestamp) : new Date();
+              const type = block.name === 'Bash' ? 'bash' : (input?.subagent_type ?? 'agent');
+              const desc = input?.description || input?.prompt?.slice(0, 80)
+                || (block.name === 'Bash' ? (input?.command || '').slice(0, 50) : '')
+                || '';
               agentMap.set(block.id, {
                 id: block.id,
-                type: input?.subagent_type ?? 'agent',
+                type,
                 status: 'running',
-                description: input?.description || input?.prompt?.slice(0, 80) || '',
+                description: desc,
                 startTime: ts,
-                isBackground: input?.run_in_background === true,
+                isBackground: isBg,
               });
             }
             // tool_result: foreground agents complete on first result.
