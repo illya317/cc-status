@@ -1,11 +1,77 @@
 import { createInterface } from 'node:readline';
-import { createReadStream } from 'node:fs';
+import { createReadStream, statSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { homedir } from 'node:os';
+import { join, resolve as resolvePath } from 'node:path';
+
+const CACHE_VERSION = 1;
+const CACHE_DIR = join(homedir(), '.claude', '.cc-status-transcript-cache');
+
+function getCachePath(transcriptPath) {
+  const hash = createHash('sha256').update(resolvePath(transcriptPath)).digest('hex');
+  return join(CACHE_DIR, `${hash}.json`);
+}
+
+function fileState(transcriptPath) {
+  try {
+    const s = statSync(transcriptPath);
+    if (!s.isFile()) return null;
+    return { mtimeMs: s.mtimeMs, size: s.size };
+  } catch {
+    return null;
+  }
+}
+
+function readCache(transcriptPath, state) {
+  try {
+    const raw = readFileSync(getCachePath(transcriptPath), 'utf8');
+    const entry = JSON.parse(raw);
+    if (entry.version !== CACHE_VERSION) return null;
+    if (entry.transcriptPath !== resolvePath(transcriptPath)) return null;
+    if (!entry.transcriptState) return null;
+    if (entry.transcriptState.mtimeMs !== state.mtimeMs) return null;
+    if (entry.transcriptState.size !== state.size) return null;
+    // Deserialize agents: ISO dates back to Date objects
+    const agents = (entry.data.agents || []).map(a => ({
+      ...a,
+      startTime: a.startTime ? new Date(a.startTime) : undefined,
+      endTime: a.endTime ? new Date(a.endTime) : undefined,
+    }));
+    return { usage: entry.data.usage, calls: entry.data.calls, lastTs: entry.data.lastTs, agents };
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(transcriptPath, state, data) {
+  try {
+    mkdirSync(CACHE_DIR, { recursive: true });
+    const agents = (data.agents || []).map(a => ({
+      ...a,
+      startTime: a.startTime?.toISOString(),
+      endTime: a.endTime?.toISOString(),
+    }));
+    writeFileSync(getCachePath(transcriptPath), JSON.stringify({
+      version: CACHE_VERSION,
+      transcriptPath: resolvePath(transcriptPath),
+      transcriptState: state,
+      data: { usage: data.usage, calls: data.calls, lastTs: data.lastTs, agents },
+    }), { encoding: 'utf8', mode: 0o600 });
+  } catch {}
+}
 
 /**
- * Single-pass JSONL transcript parser.
- * Extracts token usage, last assistant timestamp, and agent entries.
+ * Single-pass JSONL transcript parser with file-state caching.
+ * Returns cached data when transcript hasn't changed since last parse.
  */
 export async function parseTranscript(transcriptPath) {
+  // Check cache
+  const state = fileState(transcriptPath);
+  if (state) {
+    const cached = readCache(transcriptPath, state);
+    if (cached) return cached;
+  }
+
   const seenIds = new Set();
   const usage = {
     input_tokens: 0,
@@ -76,22 +142,39 @@ export async function parseTranscript(transcriptPath) {
         const content = data.message?.content;
         if (content && Array.isArray(content)) {
           for (const block of content) {
-            if (block.type === 'tool_use' && block.id && (block.name === 'Task' || block.name === 'Agent')) {
+            const isBg = block.input?.run_in_background === true;
+            const isMonitored = block.name === 'Task' || block.name === 'Agent'
+              || (block.name === 'Bash' && isBg);
+            if (block.type === 'tool_use' && block.id && isMonitored) {
               const input = block.input;
               const ts = data.timestamp ? new Date(data.timestamp) : new Date();
+              const type = block.name === 'Bash' ? 'bash' : (input?.subagent_type ?? 'agent');
+              const desc = input?.description || input?.prompt?.slice(0, 80)
+                || (block.name === 'Bash' ? (input?.command || '').slice(0, 50) : '')
+                || '';
               agentMap.set(block.id, {
                 id: block.id,
-                type: input?.subagent_type ?? 'agent',
+                type,
                 status: 'running',
-                description: input?.description || input?.prompt?.slice(0, 80) || '',
+                description: desc,
                 startTime: ts,
+                isBackground: isBg,
               });
             }
+            // tool_result: foreground agents complete on first result.
+            // Background agents get two results: launch confirm (skip)
+            // then actual completion later (accept).
             if (block.type === 'tool_result' && block.tool_use_id) {
               const agent = agentMap.get(block.tool_use_id);
               if (agent) {
-                agent.status = 'completed';
-                agent.endTime = data.timestamp ? new Date(data.timestamp) : new Date();
+                agent.toolResultCount = (agent.toolResultCount || 0) + 1;
+                const isDone = agent.isBackground
+                  ? agent.toolResultCount >= 2
+                  : agent.toolResultCount >= 1;
+                if (isDone) {
+                  agent.status = 'completed';
+                  agent.endTime = data.timestamp ? new Date(data.timestamp) : new Date();
+                }
               }
             }
           }
@@ -106,9 +189,15 @@ export async function parseTranscript(transcriptPath) {
   const agentsList = Array.from(agentMap.values());
   const running = agentsList.filter(a => a.status === 'running');
   const completed = agentsList.filter(a => a.status === 'completed');
-  const agents = [...running, ...completed.slice(-3)].slice(-5);
+  // Max 2 completed, max 3 total (same as claude-hud)
+  const agents = [...running, ...completed.slice(-2)].slice(-3);
 
-  return { usage: calls.length > 0 ? usage : null, calls, lastTs, agents };
+  const result = { usage: calls.length > 0 ? usage : null, calls, lastTs, agents };
+
+  // Write cache
+  if (state) writeCache(transcriptPath, state, result);
+
+  return result;
 }
 
 /**
