@@ -7,9 +7,9 @@ const PRICES = {
     currency: 'CNY',
   },
   'deepseek-v4-pro': {
-    input_cache_hit: 0.10,
-    input_cache_miss: 12.00,
-    output: 24.00,
+    input_cache_hit: 0.025,
+    input_cache_miss: 3.00,
+    output: 6.00,
     currency: 'CNY',
   },
   'kimi': {
@@ -42,20 +42,6 @@ const PRICES = {
 const GLM_TIER1 = { input_cache_hit: 1.30, input_cache_miss: 6.00, output: 24.00 };
 const GLM_TIER2 = { input_cache_hit: 2.00, input_cache_miss: 8.00, output: 28.00 };
 
-// DeepSeek V4 Pro promo: 2.5折 until May 31 2026 15:59 UTC
-const DS_V4_PRO_PROMO = {
-  input_cache_hit: 0.025,
-  input_cache_miss: 3.00,
-  output: 6.00,
-  currency: 'CNY',
-};
-
-const PROMO_END = new Date('2026-05-31T15:59:59Z');
-
-function isPromo() {
-  return Date.now() < PROMO_END.getTime();
-}
-
 /**
  * Resolve pricing for a given model ID.
  * Tries exact match first, then substring match.
@@ -66,18 +52,13 @@ export function resolvePrice(modelId) {
 
   // Exact match
   if (modelId in PRICES) {
-    const price = PRICES[modelId];
-    if (modelId === 'deepseek-v4-pro' && isPromo()) return DS_V4_PRO_PROMO;
-    return price;
+    return PRICES[modelId];
   }
 
   // Substring match
   const lowered = modelId.toLowerCase();
   for (const [key, p] of Object.entries(PRICES)) {
-    if (lowered.includes(key)) {
-      if (key === 'deepseek-v4-pro' && isPromo()) return DS_V4_PRO_PROMO;
-      return p;
-    }
+    if (lowered.includes(key)) return p;
   }
 
   return null;

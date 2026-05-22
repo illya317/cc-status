@@ -26,5 +26,5 @@ Claude Code status-line plugin. Reads stdin JSON, outputs a colored single-line 
 
 API credentials from `~/.env` (shell-style `export KEY=VALUE` or plain `KEY=VALUE`):
 - `DEEPSEEK_API_KEY` — DeepSeek balance
-- `KIMI_COOKIE` — Kimi quota
+- `KIMI_API_KEY` — Kimi Code quota (`sk-kimi-...`)
 - `MINIMAX_API_KEY` — MiniMax quota

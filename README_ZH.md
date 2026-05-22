@@ -120,7 +120,7 @@ export DEEPSEEK_API_KEY=sk-xxx
 | 键 | 用途 | 获取方式 |
 |-----|------|---------|
 | `DEEPSEEK_API_KEY` | DeepSeek 余额 | https://platform.deepseek.com → API keys |
-| `KIMI_COOKIE` | Kimi 配额 | 浏览器：www.kimi.com → DevTools → Cookies → `access_token` |
+| `KIMI_API_KEY` | Kimi Code 配额 | https://kimi-k2.ai/user-center/api-keys → API key (`sk-kimi-...`) |
 | `MINIMAX_API_KEY` | MiniMax 配额 | https://platform.minimax.chat → API keys |
 | `ANTHROPIC_AUTH_TOKEN` | GLM（智谱）配额 | https://open.bigmodel.cn → API keys |
 | `ANTHROPIC_BASE_URL` | GLM base URL | 默认：`https://open.bigmodel.cn/api/anthropic` |
@@ -132,13 +132,13 @@ export DEEPSEEK_API_KEY=sk-xxx
 | 模型 | 缓存命中 | 费用 | 余额 |
 |------|---------|------|------|
 | Claude (全部) | ✓ | ✓ (stdin) | — |
-| DeepSeek V4 Pro/Flash | ✓ | ✓ (促销价) | ¥ 余额 |
+| DeepSeek V4 Pro/Flash | ✓ | ✓ (2.5折) | ¥ 余额 |
 | Kimi / K2.6 | ✓ | ✓ | 配额条 |
 | MiniMax M2.7 | ✓ | ✓ | 配额条 |
 | GLM-5.1 | ✓ | ✓ (阶梯价) | 配额条 |
 | GPT-5.5 | ✓ | ✓ | — |
 
-DeepSeek V4 Pro 促销价（2.5折）自动检测，至 2026-05-31。
+DeepSeek V4 Pro 促销价（2.5折）已永久生效。
 
 ## 许可证
 

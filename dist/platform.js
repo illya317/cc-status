@@ -7,8 +7,8 @@ import { loadCache, isCacheValid, saveCache } from './cache.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // ── API Endpoints ──────────────────────────────────────────────
-const KIMI_API_URL = 'www.kimi.com';
-const KIMI_API_PATH = '/apiv2/kimi.gateway.billing.v1.BillingService/GetUsages';
+const KIMI_API_URL = 'api.kimi.com';
+const KIMI_API_PATH = '/coding/v1/usages';
 const DEEPSEEK_API_HOST = 'api.deepseek.com';
 const DEEPSEEK_API_PATH = '/user/balance';
 const MINIMAX_API_HOST = 'api.minimax.chat';
@@ -126,25 +126,21 @@ function formatMsRemaining(ms) {
 // ── Platform API fetchers ─────────────────────────────────────
 
 async function fetchKimiRaw() {
-  const cookie = getEnv('KIMI_COOKIE');
-  if (!cookie) return null;
+  const apiKey = getEnv('KIMI_API_KEY');
+  if (!apiKey) return null;
 
   const data = await apiRequest(KIMI_API_URL, {
     path: KIMI_API_PATH,
-    method: 'POST',
-    headers: { Authorization: `Bearer ${cookie}` },
-    body: { scope: [4] },
+    method: 'GET',
+    headers: { Authorization: `Bearer ${apiKey}` },
     timeout: 2000,
   });
   if (!data) return null;
 
-  const usages = data.usages || [];
-  if (usages.length === 0) return null;
-
-  const detail = usages[0].detail || {};
-  const limit = parseInt(detail.limit, 10) || 0;
-  const used = parseInt(detail.used, 10) || 0;
-  const resetTime = detail.resetTime || '';
+  const usage = data.usage || {};
+  const limit = parseInt(usage.limit, 10) || 0;
+  const used = parseInt(usage.used, 10) || 0;
+  const resetTime = usage.resetTime || '';
   const pct = limit ? Math.round((used / limit) * 100) : 0;
   const resetAtMs = resetTime ? new Date(resetTime).getTime() : 0;
   return { percent: pct, resetAtMs };

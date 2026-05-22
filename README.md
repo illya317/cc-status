@@ -120,7 +120,7 @@ Required keys:
 | Key | For | How to get |
 |-----|-----|------------|
 | `DEEPSEEK_API_KEY` | DeepSeek balance | https://platform.deepseek.com → API keys |
-| `KIMI_COOKIE` | Kimi quota | Browser: www.kimi.com → DevTools → Cookies → `access_token` |
+| `KIMI_API_KEY` | Kimi Code quota | https://kimi-k2.ai/user-center/api-keys → API key (`sk-kimi-...`) |
 | `MINIMAX_API_KEY` | MiniMax quota | https://platform.minimax.chat → API keys |
 | `ANTHROPIC_AUTH_TOKEN` | GLM (Zhipu) quota | https://open.bigmodel.cn → API keys |
 | `ANTHROPIC_BASE_URL` | GLM base URL | Default: `https://open.bigmodel.cn/api/anthropic` |
@@ -132,13 +132,13 @@ All keys are optional — missing keys simply skip that platform's balance displ
 | Model | Cache Hit | Cost | Balance |
 |-------|-----------|------|---------|
 | Claude (all) | ✓ | ✓ (stdin) | — |
-| DeepSeek V4 Pro/Flash | ✓ | ✓ (promo) | ¥ balance |
+| DeepSeek V4 Pro/Flash | ✓ | ✓ (2.5折) | ¥ balance |
 | Kimi / K2.6 | ✓ | ✓ | quota bar |
 | MiniMax M2.7 | ✓ | ✓ | quota bar |
 | GLM-5.1 | ✓ | ✓ (tiered) | quota bar |
 | GPT-5.5 | ✓ | ✓ | — |
 
-DeepSeek V4 Pro promotional pricing (2.5折) auto-detected until 2026-05-31.
+DeepSeek V4 Pro pricing (2.5折) is now permanent.
 
 ## License
 
