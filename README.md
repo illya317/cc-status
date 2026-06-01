@@ -96,6 +96,7 @@ Edit `~/.claude/plugins/marketplaces/cc-status/config.json`:
 | `display.context_bar_width` | `5` | Context bar character width |
 | `display.idle_cutoff_seconds` | `3600` | Hide idle timer after this |
 | `display.cache_ttl_seconds` | `10` | Balance cache refresh interval |
+| `display.minimax_window` | `5h` | MiniMax quota window: `5h` (rolling 5-hour) or `weekly` |
 
 ## API Credentials
 

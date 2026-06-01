@@ -96,6 +96,7 @@ git clone https://github.com/illya317/cc-status.git ~/.claude/plugins/marketplac
 | `display.context_bar_width` | `5` | 上下文条字符宽度 |
 | `display.idle_cutoff_seconds` | `3600` | 空闲计时超过此秒数隐藏 |
 | `display.cache_ttl_seconds` | `10` | 余额缓存刷新间隔 |
+| `display.minimax_window` | `5h` | MiniMax 配额窗口：`5h`（5 小时滚动）或 `weekly`（周配额） |
 
 ## API 密钥
 
