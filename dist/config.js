@@ -24,6 +24,7 @@ const DEFAULT_CONFIG = {
     usage_bar_width: 5,
     idle_cutoff_seconds: 3600,
     cache_ttl_seconds: 10,
+    minimax_window: '5h',
   },
 };
 

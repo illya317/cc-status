@@ -164,7 +164,7 @@ async function fetchDeepseekRaw() {
   return { balance: `¥${total}` };
 }
 
-async function fetchMinimaxRaw() {
+async function fetchMinimaxRaw(window = '5h') {
   const apiKey = getEnv('MINIMAX_API_KEY');
   if (!apiKey) return null;
 
@@ -181,11 +181,17 @@ async function fetchMinimaxRaw() {
   const remains = data.model_remains || [];
   // MiniMax API no longer returns MiniMax-M* entries; pick the "general" (LLM) one.
   // Schema now exposes remaining percent directly; status bar shows consumption.
+  // window: '5h' (default) or 'weekly' — selects which interval to display.
+  const isWeekly = window === 'weekly';
   for (const r of remains) {
     if (r.model_name === 'general') {
-      const remain = r.current_weekly_remaining_percent ?? 0;
+      const remain = isWeekly
+        ? (r.current_weekly_remaining_percent ?? 0)
+        : (r.current_interval_remaining_percent ?? 0);
       const pct = Math.round(100 - remain);
-      const resetAtMs = r.weekly_end_time || (Date.now() + (r.weekly_remains_time || 0));
+      const resetAtMs = isWeekly
+        ? (r.weekly_end_time || (Date.now() + (r.weekly_remains_time || 0)))
+        : (r.end_time || (Date.now() + (r.remains_time || 0)));
       return { percent: pct, resetAtMs };
     }
   }
@@ -240,7 +246,7 @@ async function fetchGlmRaw() {
  * Synchronous refresh when stale (3 APIs in parallel, 2s timeout each).
  * Returns { kimi?: {...}, deepseek?: {...}, minimax?: {...} }
  */
-export async function fetchPlatformData(cacheTtl = 10) {
+export async function fetchPlatformData({ cacheTtl = 10, minimaxWindow = '5h' } = {}) {
   const cache = loadCache();
   const platforms = {};
 
@@ -262,7 +268,7 @@ export async function fetchPlatformData(cacheTtl = 10) {
   const fetchers = {
     kimi: fetchKimiRaw,
     deepseek: fetchDeepseekRaw,
-    minimax: fetchMinimaxRaw,
+    minimax: () => fetchMinimaxRaw(minimaxWindow),
     glm: fetchGlmRaw,
   };
 

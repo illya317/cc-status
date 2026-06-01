@@ -129,7 +129,10 @@ export async function main() {
     let platformData = {};
     const modelLower = modelId.toLowerCase();
     if (modelLower.includes('kimi') || modelLower.includes('deepseek') || modelLower.includes('minimax') || modelLower.includes('glm')) {
-      platformData = await fetchPlatformData(dispCfg.cache_ttl_seconds);
+      platformData = await fetchPlatformData({
+        cacheTtl: dispCfg.cache_ttl_seconds,
+        minimaxWindow: dispCfg.minimax_window,
+      });
     }
 
     const ctx = {
