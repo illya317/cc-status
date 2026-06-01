@@ -179,13 +179,13 @@ async function fetchMinimaxRaw() {
   if (base.status_code !== 0) return null;
 
   const remains = data.model_remains || [];
+  // MiniMax API no longer returns MiniMax-M* entries; pick the "general" (LLM) one.
+  // Schema now exposes remaining percent directly; status bar shows consumption.
   for (const r of remains) {
-    if (r.model_name === 'MiniMax-M*') {
-      const total = r.current_interval_total_count || 0;
-      const used = r.current_interval_usage_count || 0;
-      const rem = total - used;
-      const pct = total > 0 ? Math.round((rem / total) * 100) : 0;
-      const resetAtMs = Date.now() + (r.remains_time || 0);
+    if (r.model_name === 'general') {
+      const remain = r.current_weekly_remaining_percent ?? 0;
+      const pct = Math.round(100 - remain);
+      const resetAtMs = r.weekly_end_time || (Date.now() + (r.weekly_remains_time || 0));
       return { percent: pct, resetAtMs };
     }
   }
